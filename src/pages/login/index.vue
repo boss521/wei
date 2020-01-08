@@ -1,74 +1,61 @@
-<template lang="pug">
-    .login-box
-        el-form(:model="ruleForm" :rules="rules" status-icon ref="ruleForm" label-width="100px" class="demo-ruleForm form-box")
-            el-form-item(label="用户名" prop="user")
-                el-input(type="password" v-model="ruleForm.user" autocomplete="off")
-            el-form-item(label="密码" prop="checkPass")
-                el-input(type="password" v-model="ruleForm.password" autocomplete="off")
-            el-form-item
-                el-button(type="primary" @click="submitForm('ruleForm')") 提交
-                el-button( @click="resetForm('ruleForm')") 重置
-</template>
+<template>
+    <div class="wrap">
+        <Form class="form-wrap" ref="formInline" :model="formInline" :rules="ruleInline">
+            <FormItem prop="user">
+                <Input type="text" v-model="formInline.user" placeholder="用户名">
+                    <Icon type="ios-person-outline" slot="prepend"></Icon>
+                </Input>
+            </FormItem>
+            <FormItem prop="password">
+                <Input type="password" v-model="formInline.password" placeholder="密码">
+                    <Icon type="ios-lock-outline" slot="prepend"></Icon>
+                </Input>
+            </FormItem>
+            <FormItem>
+                <Button type="primary" @click="handleSubmit('formInline')">登 录</Button>
+            </FormItem>
+        </Form>
+    </div>
 
+</template>
 <script>
   export default {
-    name: "index",
     data () {
-      const validatePass = (rule, value, callback) => {
-        if (value === '') {
-          callback(new Error('请输入用户名'))
-        } else {
-          if (this.ruleForm.user !== '') {
-            this.$refs.ruleForm.validateField('user')
-          }
-          callback()
-        }
-      }
-      const validatePass2 = (rule, value, callback) => {
-        if (value === '') {
-          callback(new Error('请输入密码'))
-        } else {
-          if (this.ruleForm.user !== '') {
-            this.$refs.ruleForm.validateField('password')
-          }
-          callback()
-        }
-      }
       return {
-        ruleForm: {
+        formInline: {
           user: '',
           password: ''
         },
-        rules: {
+        ruleInline: {
           user: [
-            {validator: validatePass, trigger: 'blur'}
+            {required: true, message: '请填写用户名', trigger: 'blur'}
           ],
           password: [
-            {validator: validatePass2, trigger: 'blur'}
+            {required: true, message: '请填写密码', trigger: 'blur'},
+            {type: 'string', min: 6, message: '密码最低6位', trigger: 'blur'}
           ]
         }
       }
     },
     methods: {
-      submitForm (formName) {
-        this.$refs[formName].validate((valid) => {
+      handleSubmit (name) {
+        this.$refs[name].validate((valid) => {
           if (valid) {
-            alert('submit!')
+            if (this.formInline.user === 'admin' && this.formInline.password === '123456') {
+              sessionStorage.setItem('loginAccess', '1thdsgfwrtcr-r0rewr-qw09c-wm-')
+              this.$Message.success('登录成功!')
+              this.$router.push({path: '/layout'})
+            }
           } else {
-            // console.log('error submit!!')
-            return false
+            this.$Message.error('请正确的填写账号密码')
           }
         })
-      },
-      resetForm (formName) {
-        this.$refs[formName].resetFields()
       }
     }
   }
 </script>
-
-<style lang="scss" scoped>
-    .login-box {
+<style>
+    .wrap {
         height: 100%;
         width: 100%;
         background: url("../../assets/images/login-bg.jpg") center no-repeat;
@@ -78,12 +65,7 @@
         align-items: center;
     }
 
-    /deep/ .el-form-item__label {
-        color: #fff;
-    }
-
-    .form-box {
-        min-width: 400px;
-        transform: translateX(-50px);
+    .form-wrap {
+        width: 300px;
     }
 </style>

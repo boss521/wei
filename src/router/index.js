@@ -11,5 +11,14 @@ export default new VueRouter({
   }, {
     path: '/login',
     component: () => import('../pages/login/index')
+  }, {
+    path: '/layout',
+    meta: {
+      requiresAuth: true
+    },
+    component: () => import('../pages/layout/index')
+  }, {
+    path: '*',
+    redirect: '/'
   }]
 })
