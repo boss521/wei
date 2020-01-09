@@ -1,13 +1,14 @@
 import Vue from 'vue'
 import App from './App.vue'
 import router from './router/index'
-import ViewUI from 'view-design';
-import 'view-design/dist/styles/iview.css';
+import ViewUI from 'view-design'
+import 'view-design/dist/styles/iview.css'
 import axios from 'axios'
 import qs from 'qs'
 
 
 // axios.defaults.headers['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8'
+axios.defaults.baseURL = 'http://172.16.0.194:8082'
 
 router.beforeEach((to, from, next) => {
   // to即将进入的目标路由对象，from当前导航正要离开的路由， next : 下一步执行的函数钩子
