@@ -23,8 +23,8 @@
     data () {
       return {
         formInline: {
-          user: '',
-          password: ''
+          user: 'admin',
+          password: '123456'
         },
         ruleInline: {
           user: [

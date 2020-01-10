@@ -1,14 +1,21 @@
 <template>
-    <Table border :columns="columns" :data="totalData">
-        <template slot-scope="{ row }" slot="name">
-            <strong>{{ row.name }}</strong>
-        </template>
-        <template slot-scope="{ row, index }" slot="action">
-            <Button type="primary" size="small" style="margin-right: 5px" @click="show(index)">查看
-            </Button>
-            <Button type="error" size="small" @click="remove(index)">删除</Button>
-        </template>
-    </Table>
+    <div class="list-wrap">
+        <Table border :columns="columns" :data="totalData">
+            <template slot-scope="{ row }" slot="name">
+                <strong>{{ row.name }}</strong>
+            </template>
+            <template slot-scope="{ row, index }" slot="action">
+                <Button type="primary" size="small" style="margin-right: 5px" @click="show(index)">查看
+                </Button>
+                <Button type="error" size="small" @click="remove(index)">删除</Button>
+            </template>
+        </Table>
+        <div style="margin: 10px;overflow: hidden">
+            <div style="float: right;">
+                <Page :total="100" :current="1" @on-change="changePage"/>
+            </div>
+        </div>
+    </div>
 </template>
 
 <script>
@@ -39,13 +46,13 @@
                 }
               }, [h('img', {
                 attrs: {
-                  src: params.row.licence_snapshot, style: 'width: 100px;border-radius: 2px;cursor:pointer'
+                  src: params.row.licence_snapshot, style: 'width: 90px;border-radius: 2px;cursor:pointer'
                 }
               })], params.row.licence_snapshot)
             }
           },
           {
-            title: 'Action',
+            title: '操作',
             slot: 'action',
             width: 150,
             align: 'center'
@@ -61,7 +68,7 @@
       getData () {
         this.$http.get('/allUsers').then(res => {
           if (res.data.code === 200) {
-            this.totalData = res.data.data
+            this.totalData = res.data.data.slice(0, 7)
             this.totalData.forEach(item => {
               if (!item.wx_id) {
                 item.wx_id = '无'
@@ -88,11 +95,19 @@
       },
       remove (index) {
         this.totalData.splice(index, 1)
+      },
+      changePage () {
+        // The simulated data is changed directly here, and the actual usage scenario should fetch the data from the server
+        // this.tableData1 = this.mockTableData1()
       }
     }
   }
 </script>
 
 <style scoped>
-
+    .list-wrap {
+        height: 514px;
+        width: 100%;
+        overflow: auto;
+    }
 </style>

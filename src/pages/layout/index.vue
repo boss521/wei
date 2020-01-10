@@ -5,7 +5,7 @@
             <Layout>
                 <Sider hide-trigger>
                     <Col span="8">
-                        <Menu theme="dark" active-name="1-1" :open-names="['1']">
+                        <Menu theme="dark" @on-select="routerTo" active-name="1-1" :open-names="['1']">
                             <Submenu name="1">
                                 <template slot="title">
                                     <Icon type="ios-people"/>
@@ -13,13 +13,12 @@
                                 </template>
                                 <MenuItem name="1-1">所有用户</MenuItem>
                                 <MenuItem name="1-2">添加用户</MenuItem>
-                                <MenuItem name="1-3">所有用户</MenuItem>
                             </Submenu>
                         </Menu>
                     </Col>
                 </Sider>
                 <Content>
-                    <AllUserList></AllUserList>
+                    <router-view/>
                 </Content>
             </Layout>
         </Layout>
@@ -27,12 +26,19 @@
 </template>
 
 <script>
-  import AllUserList from "../allUserList/index"
 
   export default {
     name: "index",
-    components: {
-      AllUserList
+    methods: {
+      routerTo (e) {
+        switch (e) {
+          case '1-1':
+            this.$router.push('/layout')
+            break
+          case '1-2':
+            this.$router.push('/layout/addNewUser')
+        }
+      }
     }
   }
 </script>
@@ -47,12 +53,21 @@
     }
 
     .ivu-layout {
+        flex: 1;
         height: 100%;
+    }
+
+    .ivu-layout-header, .ivu-layout-sider {
+        /*background: #000;*/
     }
 
     .ivu-table-wrapper {
         height: 100%;
         width: 100% !important;
+    }
+
+    .ivu-layout-content {
+        overflow: hidden;
     }
 
     .ivu-table-body {
