@@ -1,28 +1,28 @@
 <template>
     <div class="add-new-user">
         <Form
-                :model="ruleForm"
-                :rules="ruleObj"
-                status-icon
-                ref="ruleForm"
-                :label-width="100"
-                class="demo-ruleForm form-box"
+            :model="ruleForm"
+            :rules="ruleObj"
+            status-icon
+            ref="ruleForm"
+            :label-width="100"
+            class="demo-ruleForm form-box"
         >
-            <FormItem label="添加类型" prop="type">
-                <Select v-model="ruleForm.type" placeholder="请选择类型">
+            <FormItem label="添加类型" prop="clientType">
+                <Select v-model="ruleForm.clientType" placeholder="请选择类型">
                     <Option
-                            v-for="item in options"
-                            :key="item.value"
-                            :label="item.label"
-                            :value="item.value"
+                        v-for="item in options"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value"
                     />
                 </Select>
             </FormItem>
             <FormItem label="类型的值" prop="client_id">
-                <input type="text" v-model="ruleForm.client_id">
+                <Input class="typeValue" type="text" v-model="ruleForm.client_id"/>
             </FormItem>
             <FormItem>
-                <Button type="primary" @click="submitForm('ruleForm')">提交</Button>
+                <Button type="primary" style="margin-right: 10px" @click="submitForm('ruleForm')">提交</Button>
                 <Button @click="resetForm('ruleForm')">重置</Button>
             </FormItem>
         </Form>
@@ -43,32 +43,38 @@
           label: '手机号'
         }],
         ruleForm: {
-          type: '',
-          client_id: ''
+          clientType: '',
+          client_id: '',
+          startTime: new Date().getTime(),
+          endTime: new Date().getTime()
         },
         ruleObj: {
-          type: [{
-            required: true, message: '请选择类型', trigger: 'blur'
-          }],
-          client_id: [{
-            required: true, message: '请输入类型的值', trigger: 'blur'
-          }, {
-            min: 3, max: 11, message: '长度在 3 到 11 个字符', trigger: 'blur'
-          }]
+          clientType: [
+            {required: true, message: '请选择类型', trigger: 'blur'},
+            {message: '请选择类型', trigger: 'blur'}
+          ],
+          client_id: [
+            {required: true, message: '请输入类型的值', trigger: 'blur'},
+            {min: 3, max: 11, message: '长度在 3 到 11 个字符', trigger: 'blur'}
+          ]
         }
       }
     },
     methods: {
       submitForm (formName) {
-        if (this.ruleForm.type === '' || this.ruleForm.client_id === '') {
-          this.$Message('请完善信息')
+        if (this.ruleForm.clientType === '' || this.ruleForm.client_id === '') {
+          this.$Message.warning('请完善信息')
           return false
         }
         this.$refs[formName].validate((valid) => {
           if (valid) {
-            this.$http.post('http://172.16.0.194:8082/addNewUser', this.ruleForm).then((response) => {
-              if (response.code === 200) {
-                this.$Message.success('添加成功')
+            this.$http.post('/addNewUser', this.ruleForm).then((response) => {
+              console.log(response)
+              if (response.data.code === 200) {
+                this.$Message.success('添加成功,列表中查看')
+              } else {
+                this.$Message.error(response.data.message)
+                this.resetForm('ruleForm')
               }
             }).catch(function (error) {
               console.log(error)
@@ -87,6 +93,12 @@
 </script>
 
 <style scoped>
+    .typeValue {
+        width: 100%;
+        height: 100%;
+        display: inline-block;
+    }
+
     .add-new-user {
         height: 100%;
         width: 100%;

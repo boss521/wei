@@ -1,20 +1,33 @@
 <template>
     <div class="list-wrap">
-        <Table border :columns="columns" :data="totalData">
+        <Table border :columns="columns" :data="renderData">
             <template slot-scope="{ row }" slot="name">
                 <strong>{{ row.name }}</strong>
             </template>
             <template slot-scope="{ row, index }" slot="action">
                 <Button type="primary" size="small" style="margin-right: 5px" @click="show(index)">查看
                 </Button>
-                <Button type="error" size="small" @click="remove(index)">删除</Button>
+                <Button type="error" size="small" @click="remove(index,row)">删除</Button>
             </template>
         </Table>
         <div style="margin: 10px;overflow: hidden">
             <div style="float: right;">
-                <Page :total="100" :current="1" @on-change="changePage"/>
+                <Page
+                    show-total
+                    :total="totalData.length"
+                    :current="currentPage"
+                    :page-size="5"
+                    @on-change="changePage"
+                />
             </div>
         </div>
+        <Modal
+            v-model="showModal"
+            :loading="loading"
+            @on-ok="deleteLine"
+        >
+            <p>确定要删除吗？</p>
+        </Modal>
     </div>
 </template>
 
@@ -23,6 +36,12 @@
     name: "allUserList",
     data () {
       return {
+        currentPage: 1,// 当前页
+        totalData: [], // 数据
+        showModal: false, // 显示对话框
+        loading: true,
+        optIndex: -1, // 要操作得index
+        optId: -1, // 要操作得id
         columns: [
           {
             title: 'id',
@@ -52,23 +71,54 @@
             }
           },
           {
+            title: '起始时间',
+            key: 'start_time',
+            width: 150,
+            align: 'center'
+          },
+          {
+            title: '失效时间',
+            key: 'end_time',
+            width: 150,
+            align: 'center'
+          },
+          {
             title: '操作',
             slot: 'action',
             width: 150,
             align: 'center'
           }
-        ],
-        totalData: []
+        ]
       }
     },
     mounted () {
       this.getData()
     },
+    computed: {
+      renderData () {
+        let i = this.currentPage - 1
+        return this.totalData.slice(i * 5, i * 5 + 5)
+      }
+    },
     methods: {
+      deleteLine () {
+        this.$http.post('/deleteUser?id=' + this.optId).then(res => {
+          if (res.data.code === 200) {
+            this.showModal = false
+            this.totalData.splice(this.optId, 1)
+            this.$Message.success('删除成功')
+            this.totalData = res.data.data
+          } else {
+            this.$Message.error('获取数据失败')
+          }
+        }).catch(err => {
+          console.error(err)
+        })
+      },
       getData () {
         this.$http.get('/allUsers').then(res => {
           if (res.data.code === 200) {
-            this.totalData = res.data.data.slice(0, 7)
+            this.totalData = res.data.data
             this.totalData.forEach(item => {
               if (!item.wx_id) {
                 item.wx_id = '无'
@@ -93,12 +143,13 @@
           content: `id：${this.totalData[index].id}<br>wx_id：${this.totalData[index].wx_id}<br>phone：${this.totalData[index].phone}<br>licence_snapshot：${this.totalData[index].licence_snapshot}`
         })
       },
-      remove (index) {
-        this.totalData.splice(index, 1)
+      remove (index, row) {
+        this.showModal = true
+        this.optIndex = index
+        this.optId = row.id
       },
-      changePage () {
-        // The simulated data is changed directly here, and the actual usage scenario should fetch the data from the server
-        // this.tableData1 = this.mockTableData1()
+      changePage (p) {
+        this.currentPage = p
       }
     }
   }

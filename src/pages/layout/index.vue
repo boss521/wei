@@ -1,7 +1,9 @@
 <template>
     <div class="layout-wrap">
         <Layout>
-            <Header>Header</Header>
+            <Header>
+                <my-header/>
+            </Header>
             <Layout>
                 <Sider hide-trigger>
                     <Col span="8">
@@ -26,9 +28,13 @@
 </template>
 
 <script>
+  import MyHeader from '../../components/MyHeader/index'
 
   export default {
     name: "index",
+    components: {
+      MyHeader
+    },
     methods: {
       routerTo (e) {
         switch (e) {
@@ -59,6 +65,10 @@
 
     .ivu-layout-header, .ivu-layout-sider {
         /*background: #000;*/
+    }
+
+    .ivu-layout-header {
+        padding: 0;
     }
 
     .ivu-table-wrapper {
