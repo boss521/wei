@@ -11,18 +11,11 @@
             <FormItem label="姓 名" prop="client_name">
                 <Input class="typeValue" type="text" v-model="ruleForm.client_name"/>
             </FormItem>
-            <FormItem label="添加类型" prop="clientType">
-                <Select v-model="ruleForm.client_type" placeholder="请选择类型">
-                    <Option
-                            v-for="item in options"
-                            :key="item.value"
-                            :label="item.label"
-                            :value="item.value"
-                    />
-                </Select>
+            <FormItem label="电话" prop="client_phone">
+                <Input class="typeValue" type="text" v-model="ruleForm.client_phone"/>
             </FormItem>
-            <FormItem label="类型的值" prop="client_id">
-                <Input class="typeValue" type="text" v-model="ruleForm.client_id"/>
+            <FormItem label="微信" prop="client_wechat">
+                <Input class="typeValue" type="text" v-model="ruleForm.client_wechat"/>
             </FormItem>
             <FormItem>
                 <Button type="primary" style="margin-right: 10px" @click="submitForm('ruleForm')">提交</Button>
@@ -37,17 +30,10 @@
         name: "index",
         data() {
             return {
-                options: [{
-                    value: 'wx',
-                    label: '微信'
-                }, {
-                    value: 'phone',
-                    label: '手机号'
-                }],
                 ruleForm: {
+                    client_phone: '',
+                    client_wechat: '',
                     client_name: '',
-                    client_type: '',
-                    client_id: '',
                     start_time: new Date().getTime(),
                     end_time: new Date().getTime() + 31536000000
                 },
@@ -56,20 +42,20 @@
                         {required: true, message: '请输入姓名', trigger: 'blur'},
                         {message: '请输入姓名', trigger: 'blur'}
                     ],
-                    client_type: [
-                        {required: true, message: '请选择类型', trigger: 'blur'},
-                        {message: '请选择类型', trigger: 'blur'}
+                    client_phone: [
+                        {required: true, min: 11, max: 11, message: '请输入11位手机号', trigger: 'blur'},
+                        {message: '手机号为11位', trigger: 'blur'}
                     ],
-                    client_id: [
-                        {required: true, message: '请输入类型的值', trigger: 'blur'},
-                        {min: 3, max: 11, message: '长度在 3 到 11 个字符', trigger: 'blur'}
+                    client_wechat: [
+                        {required: true, message: '请输入微信号', trigger: 'blur'},
+                        {message: '', trigger: 'blur'}
                     ]
                 }
             }
         },
         methods: {
             submitForm(formName) {
-                if (!this.ruleForm.client_name || !this.ruleForm.client_type || !this.ruleForm.client_id) {
+                if (!this.ruleForm.client_name || !this.ruleForm.client_phone || !this.ruleForm.client_wechat) {
                     this.$Message.warning('请完善信息')
                     return false
                 }
@@ -77,13 +63,12 @@
                     if (valid) {
                         console.log(this)
                         this.$http.post('/addNewUser', this.ruleForm).then((response) => {
-                            console.log(response)
                             if (response.data.code === 200) {
                                 this.$Message.success('添加成功,列表中查看')
                             } else {
                                 this.$Message.error(response.data.message)
-                                this.resetForm('ruleForm')
                             }
+                            this.resetForm('ruleForm')
                         }).catch(function (error) {
                             console.log(error)
                         })

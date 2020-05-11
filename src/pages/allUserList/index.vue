@@ -5,8 +5,7 @@
                 <strong>{{ row.name }}</strong>
             </template>
             <template slot-scope="{ row, index }" slot="action">
-                <Button type="primary" size="small" style="margin-right: 5px" @click="show(index)">查看
-                </Button>
+                <Button type="primary" size="small" style="margin-right: 5px" @click="show(index)">查看</Button>
                 <Button type="error" size="small" @click="remove(index,row)">删除</Button>
             </template>
         </Table>
@@ -60,22 +59,8 @@
                         key: 'phone'
                     },
                     {
-                        title: '授权书',
-                        key: 'licence_snapshot',
-                        render: (h, params) => {
-                            return h('a', {
-                                attrs: {
-                                    href: params.row.licence_snapshot,
-                                    target: '_blank',
-                                    title: params.row.licence_snapshot
-                                }
-                            }, [h('img', {
-                                attrs: {
-                                    src: params.row.licence_snapshot,
-                                    style: 'width: 90px;border-radius: 2px;cursor:pointer'
-                                }
-                            })], params.row.licence_snapshot)
-                        }
+                        title: '授权码',
+                        key: 'identifier'
                     },
                     {
                         title: '起始时间',
@@ -102,19 +87,20 @@
             this.getData()
         },
         computed: {
-            renderData() {
-                let i = this.currentPage - 1
+            renderData: function () {
+                let i = this.currentPage - 1;
                 return this.totalData.slice(i * 5, i * 5 + 5)
             }
         },
         methods: {
-            deleteLine() {
-                this.$http.post('/deleteUser?id=' + this.optId).then(res => {
+            deleteLine: function () {
+                this.$http.post('/deleteUser', {id: this.optId}).then(res => {
                     if (res.data.code === 200) {
                         this.showModal = false
-                        this.totalData.splice(this.optId, 1)
                         this.$Message.success('删除成功')
-                        this.totalData = res.data.data
+                        this.totalData = this.totalData.filter(item => {
+                            return item.id !== this.optId
+                        })
                     } else {
                         this.$Message.error('获取数据失败')
                     }
@@ -124,18 +110,14 @@
             },
             getData() {
                 this.$http.get('/allUsers').then(res => {
-                    console.log(res)
                     if (res.data.code === 200) {
-                        this.totalData = res.data.data
+                        this.totalData = [...res.data.data];
                         this.totalData.forEach(item => {
                             if (!item.wx_id) {
                                 item.wx_id = '无'
                             }
                             if (!item.phone) {
                                 item.phone = '无'
-                            }
-                            if (!item.licence_snapshot) {
-                                item.licence_snapshot = '无'
                             }
                             if (!item.nickname) {
                                 item.nickname = '无'
@@ -150,8 +132,8 @@
             },
             show(index) {
                 this.$Modal.info({
-                    title: 'User Info',
-                    content: `id：${this.totalData[index].id}<br>wx_id：${this.totalData[index].wx_id}<br>phone：${this.totalData[index].phone}<br>licence_snapshot：${this.totalData[index].licence_snapshot}`
+                    title: '信息概要',
+                    content: `id：${this.totalData[index].id}<br>微信id：${this.totalData[index].wx_id}<br>手机号：${this.totalData[index].phone}`
                 })
             },
             remove(index, row) {
