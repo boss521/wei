@@ -9,7 +9,9 @@ import qs from 'qs'
 
 
 // axios.defaults.headers['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8'
-axios.defaults.baseURL = 'http://192.168.1.107:8082'
+axios.defaults.baseURL = 'http://wei.betterman.top';
+// axios.defaults.baseURL = 'http://192.168.0.106:8082';
+axios.defaults.headers.post['Content-Type'] = 'application/json';
 
 router.beforeEach((to, from, next) => {
   // to即将进入的目标路由对象，from当前导航正要离开的路由， next : 下一步执行的函数钩子

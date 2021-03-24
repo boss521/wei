@@ -61,7 +61,6 @@
                 }
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
-                        console.log(this)
                         this.$http.post('/addNewUser', this.ruleForm).then((response) => {
                             if (response.data.code === 200) {
                                 this.$Message.success('添加成功,列表中查看')

@@ -1,6 +1,6 @@
 <template>
     <div class="my-header">
-        <div class="logo">i love u</div>
+        <div class="logo">锋拓传媒</div>
         <div class="quit">
             <Dropdown style="margin-left: 20px" @on-click="checkedVal">
                 <Avatar class="my-avatar" size="large" icon="ios-person"/>
